@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -138,7 +137,7 @@ export default function AdminPage() {
                 onChange={(e) => setCover(e.target.value)}
                 placeholder="https://..."
               />
-              {cover ? <img src={cover} alt="" className="mt-2 h-36 w-full object-cover rounded-lg border" /> : null}
+              {cover ? <Image src={cover} alt="" className="mt-2 h-36 w-full object-cover rounded-lg border" /> : null}
             </div>
 
             <div>
@@ -189,8 +188,7 @@ export default function AdminPage() {
             <p className="text-xs uppercase tracking-wide text-[var(--muted)] mb-2">Card Preview (Landing)</p>
             <div className="rounded-xl border p-3 bg-[var(--surface-2)]">
               {cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt="" className="h-40 w-full object-cover rounded-lg mb-3" />
+                <Image src={cover} alt="" className="h-40 w-full object-cover rounded-lg mb-3" />
               ) : (
                 <div className="h-40 w-full rounded-lg bg-neutral-900 grid place-items-center mb-3 text-neutral-500 text-sm">
                   No cover
@@ -206,7 +204,7 @@ export default function AdminPage() {
             <article className="prose max-w-none">
               <h1>{title || 'Story title'}</h1>
               <p className="text-sm text-[var(--muted)]">By Admin · {new Date().toLocaleDateString('en-GB')}</p>
-              {cover ? <img src={cover} alt="" className="w-full rounded-2xl my-6" /> : null}
+              {cover ? <Image src={cover} alt="" className="w-full rounded-2xl my-6" /> : null}
               <div className="whitespace-pre-wrap">{content || 'Start writing your story to see it here…'}</div>
             </article>
           </div>
