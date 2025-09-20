@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "engines": { "node": "20.x" },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
     "next": "15.5.3",
