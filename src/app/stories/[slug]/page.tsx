@@ -1,6 +1,5 @@
 import { supabasePublic } from '@/lib/supabasePublic';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 
 type RouteParams = { slug: string };
 
@@ -9,7 +8,7 @@ export default async function StoryPage({
 }: {
   params: Promise<RouteParams>;
 }) {
-  const { slug } = await params;
+  const { slug } = await params; // ✅ await params before using it
 
   const supabase = supabasePublic();
   const { data, error } = await supabase
@@ -33,23 +32,9 @@ export default async function StoryPage({
       <p className="text-sm text-[var(--muted)]">
         By {data.author ?? 'Admin'} · {dateStr}
       </p>
-
       {data.cover_image_url ? (
-        <div
-          className="relative w-full my-6 overflow-hidden rounded-2xl"
-          style={{ aspectRatio: '16 / 9' }} // keeps layout stable
-        >
-          <Image
-            src={data.cover_image_url}
-            alt=""
-            fill
-            sizes="(max-width: 768px) 100vw, 960px"
-            className="object-cover"
-            unoptimized
-          />
-        </div>
+        <img src={data.cover_image_url} alt="" className="w-full rounded-2xl my-6" />
       ) : null}
-
       <div className="whitespace-pre-wrap">{data.content}</div>
     </article>
   );
