@@ -12,14 +12,15 @@ export default async function StoryPage({ params }: { params: { slug: string } }
 
   if (error || !data) return notFound();
 
+  const dateStr = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric'
+  }).format(new Date(data.created_at));
+
   return (
-    <article className="prose prose-neutral max-w-none">
+    <article className="prose max-w-none">
       <h1>{data.title}</h1>
-      <p className="text-sm text-neutral-500">
-        By {data.author ?? 'Admin'} · {new Date(data.created_at).toLocaleDateString()}
-      </p>
+      <p className="text-sm text-neutral-400">By {data.author ?? 'Admin'} · {dateStr}</p>
       {data.cover_image_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img src={data.cover_image_url} alt="" className="w-full rounded-2xl my-6" />
       ) : null}
       <div className="whitespace-pre-wrap">{data.content}</div>

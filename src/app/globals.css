@@ -1,26 +1,120 @@
+/* Tailwind v4 zero-config */
 @import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ===== Theme tokens (more purple) ===== */
+:root{
+  /* Brand spectrum */
+  --brand-700:#6D28D9;
+  --brand-600:#7C3AED;
+  --brand-500:#8B5CF6;
+  --brand-400:#A78BFA;
+  --brand:var(--brand-600);
+
+  /* Neutrals with purple tint */
+  --bg:#0a0910;          /* slightly violet black */
+  --surface:#111018;     /* cards */
+  --surface-2:#0f0e16;   /* alt cards */
+  --border:#2a2536;
+
+  --text:#ECEAF7;
+  --muted:#B3ACCC;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html{ color-scheme:dark; }
+
+/* Subtle purple glow background */
+body{
+  background: var(--bg);
+  color: var(--text);
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--brand-600) 10%, transparent) 0%, transparent 70%),
+    radial-gradient(1000px 500px at 80% -20%, color-mix(in srgb, var(--brand-700) 12%, transparent) 0%, transparent 70%);
+  background-repeat: no-repeat;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Layout helpers */
+.header-accent{
+  height:8px;
+  background:linear-gradient(90deg,var(--brand-700),var(--brand-600),var(--brand-400));
+}
+.shell{ max-width:72rem; margin-inline:auto; padding-inline:1.25rem; }
+
+/* Surfaces (purple-tinted) */
+.card{
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 90%, var(--brand-700) 10%);
+  border-radius:1rem;
+}
+.section{
+  border:1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 85%, var(--brand-700) 15%);
+  border-radius:1rem;
+  backdrop-filter: blur(8px);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Hover lift helper for cards/buttons */
+.hover-ring-brand{ transition: box-shadow .2s, border-color .2s, transform .2s; }
+.hover-ring-brand:hover{
+  box-shadow: 0 8px 40px -12px color-mix(in srgb, var(--brand-500) 65%, transparent);
+  border-color: color-mix(in srgb, var(--brand-500) 65%, var(--border));
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.btn{ @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition; }
+.btn-primary{
+  background: var(--brand-600); color:#fff;
+  box-shadow: 0 8px 34px -14px color-mix(in srgb, var(--brand-600) 70%, transparent);
+}
+.btn-primary:hover{ background: var(--brand-500); }
+.btn-ghost{
+  border:1px solid var(--border); color:var(--text);
+  background: color-mix(in srgb, var(--surface) 92%, var(--brand-700) 8%);
+}
+.btn-ghost:hover{ border-color: color-mix(in srgb, var(--brand-500) 50%, var(--border)); }
+
+/* Inputs (forms plugin styles respected) */
+input, textarea, select{
+  background: color-mix(in srgb, var(--surface-2) 85%, var(--brand-700) 15%) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+input::placeholder, textarea::placeholder{ color: var(--muted); opacity: 1; }
+input:focus, textarea:focus, select:focus{
+  outline:none;
+  box-shadow:0 0 0 2px color-mix(in srgb, var(--brand-500) 50%, transparent);
+  border-color: color-mix(in srgb, var(--brand-500) 65%, var(--border));
+}
+
+/* Links */
+a{ color: var(--brand-400); }
+a:hover{ color: var(--brand-500); }
+
+/* Typography */
+.prose{ @apply prose-invert; }
+.prose a{ color: var(--brand-400); }
+.prose a:hover{ color: var(--brand-500); }
+
+/* Badges */
+.badge{
+  background: color-mix(in srgb, var(--brand-600) 18%, #000);
+  color: color-mix(in srgb, var(--brand-400) 90%, #fff);
+  border:1px solid color-mix(in srgb, var(--brand-500) 35%, var(--border));
+  @apply text-xs px-2 py-0.5 rounded-md;
+}
+
+/* Logo sizing */
+.logo     { width: clamp(56px, 6vw, 80px); height: clamp(56px, 6vw, 80px); }
+.logo--sm { width: clamp(40px, 5vw, 56px); height: clamp(40px, 5vw, 56px); }
+
+/* Nice selection + consistent borders */
+::selection{ background: color-mix(in srgb, var(--brand-500) 35%, transparent); }
+img, .border{ border-color: var(--border); }
+
+/* Safe fallback if color-mix unsupported */
+@supports not (background: color-mix(in srgb, white, black)){
+  .card{ background: var(--surface); }
+  .section{ background: var(--surface-2); }
 }
