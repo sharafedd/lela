@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Link from 'next/link';
 import Image from 'next/image';
+import SiteFooter from '@/components/SiteFooter';
 
 export const metadata: Metadata = {
   title: 'Lela — Stories',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <body id="top" suppressHydrationWarning>
         {/* Purple accent bar */}
         <div className="header-accent w-full" />
 
@@ -57,12 +58,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <main className="shell py-8">{children}</main>
 
-        <footer className="mt-16 border-t border-[color-mix(in_srgb,var(--brand-700) 25%,var(--border))]">
-          <div className="shell py-8 text-sm text-[var(--muted)] flex items-center justify-between">
-            <span>© {new Date().getFullYear()} Lela</span>
-            <Image src="/lela-logo.png" alt="Lela" width={32} height={32} className="opacity-80" />
-          </div>
-        </footer>
+        {/* New global footer */}
+        <SiteFooter />
       </body>
     </html>
   );
