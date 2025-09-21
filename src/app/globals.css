@@ -1,7 +1,10 @@
 /* Tailwind v4 zero-config */
-@import "tailwindcss";
-@plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@source "../**/*.{ts,tsx,js,jsx,mdx}";
+@source "../../**/*.{ts,tsx,js,jsx,mdx}";
 
 /* ===== Theme tokens (more purple) ===== */
 :root{
@@ -74,6 +77,7 @@ body{
   background: color-mix(in srgb, var(--surface) 92%, var(--brand-700) 8%);
 }
 .btn-ghost:hover{ border-color: color-mix(in srgb, var(--brand-500) 50%, var(--border)); }
+.btn:active { transform: translateY(0.5px); }
 
 /* Inputs (forms plugin styles respected) */
 input, textarea, select{
@@ -111,10 +115,13 @@ a:hover{ color: var(--brand-500); }
 
 /* Nice selection + consistent borders */
 ::selection{ background: color-mix(in srgb, var(--brand-500) 35%, transparent); }
-img, .border{ border-color: var(--border); }
+img, .border { border-color: var(--border); }
 
 /* Safe fallback if color-mix unsupported */
 @supports not (background: color-mix(in srgb, white, black)){
   .card{ background: var(--surface); }
   .section{ background: var(--surface-2); }
 }
+
+:focus-visible { outline: none !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-500) 50%, transparent); }
+
