@@ -14,18 +14,10 @@ export default function AdminPage() {
   const [content, setContent] = useState('');
   const [cover, setCover] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
-  const [adminSecret, setAdminSecret] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('lela_admin_secret') : null;
-    if (saved) setAdminSecret(saved);
-  }, []);
-  useEffect(() => {
-    if (adminSecret) localStorage.setItem('lela_admin_secret', adminSecret);
-  }, [adminSecret]);
   useEffect(() => {
     if (!slug && title) setSlug(toSlug(title));
   }, [title, slug]);
@@ -34,7 +26,9 @@ export default function AdminPage() {
   const excerptCount = useMemo(() => excerpt.trim().length, [excerpt]);
 
   const submit = async (publish: boolean) => {
-    setLoading(true); setError(null); setResult(null);
+    setLoading(true);
+    setError(null);
+    setResult(null);
     try {
       const body = {
         title,
@@ -46,11 +40,19 @@ export default function AdminPage() {
       };
       const res = await fetch('/api/stories', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminSecret },
+        headers: { 'Content-Type': 'application/json' }, // ✅ cookie-based auth via middleware
         body: JSON.stringify(body),
       });
+
+      if (res.status === 401) {
+        // not logged in
+        window.location.href = '/admin/login';
+        return;
+      }
+
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to save');
+
       setResult(`/stories/${json.slug}`);
       setTitle(''); setSlug(''); setExcerpt(''); setContent(''); setCover(''); setStatus('draft');
     } catch (err) {
@@ -63,31 +65,35 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Image src="/lela-logo.png" alt="Lela" width={56} height={56} className="rounded-lg" />
-        <div>
-          <h1 className="text-3xl font-semibold">Admin · Create Story</h1>
-          <p className="text-sm text-[var(--muted)]">Write, preview, and publish stories to <span style={{ color: 'var(--brand)' }}>Lela</span>.</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative h-12 w-12 rounded-xl overflow-hidden">
+            <Image src="/lela-logo.png" alt="Lela" fill sizes="48px" className="object-contain" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-semibold">Admin · Create Story</h1>
+            <p className="text-sm text-[var(--muted)]">
+              Write, preview, and publish stories to <span style={{ color: 'var(--brand)' }}>Lela</span>.
+            </p>
+          </div>
         </div>
+
+        {/* Logout */}
+        <button
+          onClick={async () => {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            window.location.href = '/admin/login';
+          }}
+          className="btn btn-ghost"
+        >
+          Logout
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Form card */}
         <section className="section hover-ring-brand">
           <form onSubmit={(e) => { e.preventDefault(); submit(status === 'published'); }} className="p-5 space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-[var(--muted)]">Admin Secret</label>
-              <input
-                type="password"
-                required
-                className="mt-1 w-full rounded-lg border px-3 py-2 placeholder:text-[var(--muted)]"
-                value={adminSecret}
-                onChange={(e) => setAdminSecret(e.target.value)}
-                placeholder="Enter the ADMIN_SECRET"
-              />
-              <p className="text-xs text-[var(--muted)] mt-1">Stored locally in your browser (not sent anywhere until you save).</p>
-            </div>
-
             <div>
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-[var(--muted)]">Title</label>
@@ -137,7 +143,11 @@ export default function AdminPage() {
                 onChange={(e) => setCover(e.target.value)}
                 placeholder="https://..."
               />
-              {cover ? <Image src={cover} alt="" className="mt-2 h-36 w-full object-cover rounded-lg border" /> : null}
+              {cover ? (
+                <div className="mt-2 h-36 w-full relative rounded-lg border overflow-hidden">
+                  <Image src={cover} alt="" fill unoptimized className="object-cover" />
+                </div>
+              ) : null}
             </div>
 
             <div>
@@ -188,14 +198,18 @@ export default function AdminPage() {
             <p className="text-xs uppercase tracking-wide text-[var(--muted)] mb-2">Card Preview (Landing)</p>
             <div className="rounded-xl border p-3 bg-[var(--surface-2)]">
               {cover ? (
-                <Image src={cover} alt="" className="h-40 w-full object-cover rounded-lg mb-3" />
+                <div className="relative h-40 w-full rounded-lg mb-3 overflow-hidden">
+                  <Image src={cover} alt="" fill unoptimized className="object-cover" />
+                </div>
               ) : (
                 <div className="h-40 w-full rounded-lg bg-neutral-900 grid place-items-center mb-3 text-neutral-500 text-sm">
                   No cover
                 </div>
               )}
               <h2 className="text-lg font-semibold leading-snug">{title || 'Story title'}</h2>
-              <p className="text-sm text-[var(--muted)] mt-1 line-clamp-3">{excerpt || 'Short summary will appear here.'}</p>
+              <p className="text-sm text-[var(--muted)] mt-1 line-clamp-3">
+                {excerpt || 'Short summary will appear here.'}
+              </p>
             </div>
           </div>
 
@@ -204,8 +218,14 @@ export default function AdminPage() {
             <article className="prose max-w-none">
               <h1>{title || 'Story title'}</h1>
               <p className="text-sm text-[var(--muted)]">By Admin · {new Date().toLocaleDateString('en-GB')}</p>
-              {cover ? <Image src={cover} alt="" className="w-full rounded-2xl my-6" /> : null}
-              <div className="whitespace-pre-wrap">{content || 'Start writing your story to see it here…'}</div>
+              {cover ? (
+                <div className="relative w-full overflow-hidden rounded-2xl my-6" style={{ aspectRatio: '16 / 9' }}>
+                  <Image src={cover} alt="" fill unoptimized className="object-cover" />
+                </div>
+              ) : null}
+              <div className="whitespace-pre-wrap">
+                {content || 'Start writing your story to see it here…'}
+              </div>
             </article>
           </div>
         </aside>

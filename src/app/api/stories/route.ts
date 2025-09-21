@@ -1,31 +1,52 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { AUTH_COOKIE, isValidSession } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 function toSlug(input: string) {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+async function authorized(req: Request): Promise<boolean> {
+  // Prefer signed cookie session
+  const token = (await cookies()).get(AUTH_COOKIE)?.value;
+  if (isValidSession(token)) return true;
+
+  // Back-compat header (optional)
+  const headerSecret = req.headers.get('x-admin-secret');
+  if (headerSecret && process.env.ADMIN_SECRET && headerSecret === process.env.ADMIN_SECRET) {
+    return true;
+  }
+  return false;
 }
 
 export async function POST(req: Request) {
-  const secret = req.headers.get('x-admin-secret');
-  if (!secret || secret !== process.env.ADMIN_SECRET) {
+  if (!authorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await req.json();
-  const title: string | undefined = body.title;
-  const content: string | undefined = body.content;
+  // Parse and validate JSON (no `any`)
+  const raw = await req.json().catch(() => null);
+  if (!raw || typeof raw !== 'object') {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+  const obj = raw as Record<string, unknown>;
+
+  const title = typeof obj.title === 'string' ? obj.title : undefined;
+  const content = typeof obj.content === 'string' ? obj.content : undefined;
   if (!title || !content) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const slug = body.slug ? toSlug(body.slug) : toSlug(title);
-  const excerpt = body.excerpt ?? null;
-  const coverImageUrl = body.coverImageUrl ?? null;
-  const status = body.status === 'published' ? 'published' : 'draft';
+  const slugInput = typeof obj.slug === 'string' ? obj.slug : undefined;
+  const excerpt = typeof obj.excerpt === 'string' ? obj.excerpt : null;
+  const coverImageUrl =
+    typeof obj.coverImageUrl === 'string' && obj.coverImageUrl.trim() !== ''
+      ? obj.coverImageUrl
+      : null;
+  const status = obj.status === 'published' ? 'published' : 'draft';
+
+  const slug = slugInput ? toSlug(slugInput) : toSlug(title);
 
   const sb = supabaseAdmin();
   const { data, error } = await sb
