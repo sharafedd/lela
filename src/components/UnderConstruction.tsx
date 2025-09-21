@@ -19,10 +19,11 @@ export default function UnderConstruction({ title }: { title: string }) {
 
         {/* Intrinsic-size gif — no cropping, no background */}
         <img
-          src="/underconstruction.gif"
-          alt="Under construction"
-          className="w-full max-w-[280px] h-auto mx-auto rounded-2xl border border-[var(--border)] shadow-lg"
-          loading="eager"
+            src="/underconstruction.gif"
+            alt="Under construction"
+            className="w-full max-w-[280px] h-auto mx-auto rounded-2xl border border-[var(--border)] shadow-lg"
+            loading="lazy"
+            decoding="async"
         />
 
         <p className="mt-3 text-xs text-[var(--muted)]">
