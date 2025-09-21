@@ -3,6 +3,7 @@ import './globals.css';
 import Link from 'next/link';
 import Image from 'next/image';
 import SiteFooter from '@/components/SiteFooter';
+import MobileMenu from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
   title: 'Lela — Stories',
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   icons: { icon: '/lela-logo.png' },
 };
 
-/* --- tiny inline icons (pure SVG, server-safe) --- */
+/* --- inline icons (server-safe) --- */
 function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" {...props}>
@@ -53,6 +54,20 @@ function Crown(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+function Menu(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
+      <path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+    </svg>
+  );
+}
+function Close(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...props}>
+      <path fill="currentColor" d="M6.7 6.7 12 12l5.3-5.3 1.4 1.4L13.4 13.4l5.3 5.3-1.4 1.4L12 14.8l-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4z"/>
+    </svg>
+  );
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -63,115 +78,91 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <header className="sticky top-0 z-40 border-b border-[color-mix(in_srgb,var(--brand-700) 35%,var(--border))] bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] backdrop-blur">
           <div className="shell py-3 flex items-center justify-between">
-            {/* LEFT: logo + wordmark + main nav */}
-            <div className="flex items-center gap-6">
-              <Link href="/" className="group flex items-center gap-3">
-                {/* Square logo box (unchanged) */}
-                <div
-                  className="relative h-14 w-14 rounded-2xl ring-1"
-                  style={{ boxShadow: '0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent)' }}
-                >
-                  <Image
-                    src="/lela-logo.png"
-                    alt="Lela"
-                    fill
-                    sizes="56px"
-                    className="object-contain"
-                    priority
-                  />
-                </div>
+            {/* LEFT: logo + wordmark */}
+            <Link href="/" className="group flex items-center gap-3">
+              <div
+                className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-2xl ring-1"
+                style={{ boxShadow: '0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent)' }}
+              >
+                <Image
+                  src="/lela-logo.png"
+                  alt="Lela"
+                  fill
+                  sizes="56px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <span
+                className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-none tracking-tight"
+                style={{ color: 'var(--brand)' }}
+              >
+                Lela
+              </span>
+            </Link>
 
-                {/* Wordmark (unchanged) */}
-                <span
-                  className="text-3xl lg:text-4xl font-semibold leading-none tracking-tight"
-                  style={{ color: 'var(--brand)' }}
-                >
-                  Lela
-                </span>
-              </Link>
-
-              {/* Main nav */}
-              <nav className="hidden md:flex items-center gap-6 text-sm text-[var(--muted)]">
+            {/* DESKTOP: nav + icons */}
+            <div className="hidden md:flex items-center gap-6">
+              {/* main nav */}
+              <nav className="flex items-center gap-6 text-sm text-[var(--muted)]">
                 <Link href="/browse" className="inline-flex items-center gap-1 hover:text-white">
                   Browse <ChevronDown className="text-[var(--muted)]" />
                 </Link>
                 <Link href="/explore" className="hover:text-white">Explore</Link>
               </nav>
+
+              {/* right icons */}
+              <nav className="flex items-center gap-3">
+                <Link href="/library" aria-label="Saved" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
+                  <Bookmark />
+                </Link>
+                <Link href="/admin/stories" aria-label="Create" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
+                  <PlusSquare />
+                </Link>
+                <span className="h-5 w-px bg-[var(--border)] mx-1" />
+                <Link
+                  href="/premium"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm"
+                  style={{
+                    background: 'color-mix(in srgb, var(--brand) 18%, #000)',
+                    border: '1px solid color-mix(in srgb, var(--brand) 35%, var(--border))',
+                    color: '#fbbf24',
+                  }}
+                >
+                  <Crown style={{ color: '#f59e0b' }} />
+                  <span className="font-semibold">TRY LELA <span className="font-extrabold">PREMIUM</span></span>
+                  <span aria-hidden>👉</span>
+                </Link>
+                <span className="h-5 w-px bg-[var(--border)] mx-1" />
+                <Link href="/inbox" aria-label="Messages" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
+                  <Envelope />
+                </Link>
+                <Link href="/notifications" aria-label="Notifications" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
+                  <Bell />
+                </Link>
+                <div className="flex items-center gap-1">
+                  <div
+                    className="h-8 w-8 rounded-full overflow-hidden ring-1 ring-[var(--border)] grid place-items-center"
+                    style={{ background: 'color-mix(in srgb, var(--brand) 18%, #1a1a1f)', color: 'var(--brand)' }}
+                    aria-label="User menu"
+                  >
+                    <span className="text-sm font-semibold">U</span>
+                  </div>
+                  <ChevronDown className="text-[var(--muted)]" />
+                </div>
+              </nav>
             </div>
 
-            {/* RIGHT: icons + premium pill + avatar placeholder */}
-            <nav className="flex items-center gap-3">
-              <Link
-                href="/library"
-                aria-label="Saved"
-                className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]"
-              >
-                <Bookmark />
-              </Link>
-              <Link
-                href="/admin/stories"
-                aria-label="Create"
-                className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]"
-              >
-                <PlusSquare />
-              </Link>
-
-              <span className="hidden sm:block h-5 w-px bg-[var(--border)] mx-1" />
-
-              <Link
-                href="/premium"
-                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm"
-                style={{
-                  background: 'color-mix(in srgb, var(--brand) 18%, #000)',
-                  border: '1px solid color-mix(in srgb, var(--brand) 35%, var(--border))',
-                  color: '#fbbf24', // amber-400
-                }}
-              >
-                <Crown style={{ color: '#f59e0b' /* amber-500 */ }} />
-                <span className="font-semibold">
-                  TRY LELA <span className="font-extrabold">PREMIUM</span>
-                </span>
-                <Crown style={{ color: '#f59e0b' /* amber-500 */ }} />
-              </Link>
-
-              <span className="hidden sm:block h-5 w-px bg-[var(--border)] mx-1" />
-
-              <Link
-                href="/inbox"
-                aria-label="Messages"
-                className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]"
-              >
-                <Envelope />
-              </Link>
-              <Link
-                href="/notifications"
-                aria-label="Notifications"
-                className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]"
-              >
-                <Bell />
-              </Link>
-
-              {/* Avatar placeholder + caret */}
-              <div className="flex items-center gap-1">
-                <div
-                  className="h-8 w-8 rounded-full overflow-hidden ring-1 ring-[var(--border)] grid place-items-center"
-                  style={{ background: 'color-mix(in srgb, var(--brand) 18%, #1a1a1f)', color: 'var(--brand)' }}
-                  aria-label="User menu"
-                >
-                  <span className="text-sm font-semibold">U</span>
-                </div>
-                <ChevronDown className="text-[var(--muted)]" />
-              </div>
-            </nav>
+            {/* Mobile Menu */}
+            <MobileMenu />
           </div>
 
-          {/* Purple underline like your mock */}
+          {/* purple underline */}
           <div className="h-1 w-full bg-[var(--brand)]/90" />
         </header>
 
         <main className="shell py-8">{children}</main>
 
-        {/* Global footer */}
         <SiteFooter />
       </body>
     </html>
