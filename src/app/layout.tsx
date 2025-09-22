@@ -49,8 +49,15 @@ function Bell(props: React.SVGProps<SVGSVGElement>) {
 }
 function Crown(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...props}>
-      <path fill="currentColor" d="M5 17h14l-1 3H6l-1-3Zm0-9 4 4 3-6 3 6 4-4v8H5V8Z" />
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" {...props}>
+      <path fill="currentColor" d="M5 17h14l-1 3H6l-1-3Zm0-9 4 4 3-6 3 6 4-4v8H5V8Z"/>
+    </svg>
+  );
+}
+function Gem(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" {...props}>
+      <path fill="currentColor" d="M3 9 8 3h8l5 6-9 12L3 9Zm6-3-3 3h12l-3-3H9Z"/>
     </svg>
   );
 }
@@ -76,33 +83,35 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Purple accent bar */}
         <div className="header-accent w-full" />
 
-        <header className="sticky top-0 z-40 border-b border-[color-mix(in_srgb,var(--brand-700) 35%,var(--border))] bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] backdrop-blur">
-          <div className="shell py-3 flex items-center justify-between">
+        <header
+          className="sticky top-0 inset-x-0 z-50 border-b border-[color-mix(in_srgb,var(--brand-700) 35%,var(--border))] 
+                     bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)]/95 backdrop-blur"
+        >
+          <div className="shell h-[72px] flex items-center justify-between">
+            <div className="flex items-center gap-6 min-w-0">
             {/* LEFT: logo + wordmark */}
-            <Link href="/" className="group flex items-center gap-3">
-              <div
-                className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-2xl ring-1"
-                style={{ boxShadow: '0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent)' }}
-              >
-                <Image
-                  src="/lela-logo.png"
-                  alt="Lela"
-                  fill
-                  sizes="56px"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              <span
-                className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-none tracking-tight"
-                style={{ color: 'var(--brand)' }}
-              >
-                Lela
-              </span>
-            </Link>
+              <Link href="/" className="group flex items-center gap-3">
+                <div
+                  className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-2xl ring-1"
+                  style={{ boxShadow: '0 0 0 1px color-mix(in srgb, var(--brand) 40%, transparent)' }}
+                >
+                  <Image
+                    src="/lela-logo.png"
+                    alt="Lela"
+                    fill
+                    sizes="56px"
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+                <span
+                  className="text-2xl sm:text-3xl lg:text-4xl font-semibold leading-none tracking-tight"
+                  style={{ color: 'var(--brand)' }}
+                >
+                  Lela
+                </span>
+              </Link>
 
-            {/* DESKTOP: nav + icons */}
-            <div className="hidden md:flex items-center gap-6">
               {/* main nav */}
               <nav className="flex items-center gap-6 text-sm text-[var(--muted)]">
                 <Link href="/browse" className="inline-flex items-center gap-1 hover:text-white">
@@ -110,7 +119,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </Link>
                 <Link href="/explore" className="hover:text-white">Explore</Link>
               </nav>
+            </div>
 
+            {/* DESKTOP: nav + icons */}
+            <div className="hidden md:flex items-center gap-6">
               {/* right icons */}
               <nav className="flex items-center gap-3">
                 <Link href="/library" aria-label="Saved" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
@@ -120,18 +132,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <PlusSquare />
                 </Link>
                 <span className="h-5 w-px bg-[var(--border)] mx-1" />
-                <Link
-                  href="/premium"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm"
-                  style={{
-                    background: 'color-mix(in srgb, var(--brand) 18%, #000)',
-                    border: '1px solid color-mix(in srgb, var(--brand) 35%, var(--border))',
-                    color: '#fbbf24',
-                  }}
-                >
-                  <Crown style={{ color: '#f59e0b' }} />
-                  <span className="font-semibold">TRY LELA <span className="font-extrabold">PREMIUM</span></span>
-                  <span aria-hidden>👉</span>
+                {/* Premium badge */}
+                <Link href="/premium" className="header-premium">
+                  <span className="header-premium__crown" aria-hidden="true"><Crown /></span>
+                  <span className="header-premium__title">
+                    <span className="header-premium__top">TRY LELA</span>
+                    <span className="header-premium__bottom">PREMIUM</span>
+                  </span>
+                  <span className="header-premium__gem" aria-hidden="true"><Gem /></span>
                 </Link>
                 <span className="h-5 w-px bg-[var(--border)] mx-1" />
                 <Link href="/inbox" aria-label="Messages" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
