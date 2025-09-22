@@ -140,16 +140,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/notifications" aria-label="Notifications" className="p-2 rounded-md text-[var(--muted)] hover:text-white hover:bg-[color-mix(in_srgb,var(--surface) 75%,var(--brand-700) 25%)] border border-transparent hover:border-[var(--border)]">
                   <Bell />
                 </Link>
-                <div className="flex items-center gap-1">
+                
+                {/* Avatar → link to profile */}
+                <Link href="/admin/profile" className="flex items-center gap-1 group" aria-label="Open profile">
                   <div
                     className="h-8 w-8 rounded-full overflow-hidden ring-1 ring-[var(--border)] grid place-items-center"
                     style={{ background: 'color-mix(in srgb, var(--brand) 18%, #1a1a1f)', color: 'var(--brand)' }}
-                    aria-label="User menu"
                   >
                     <span className="text-sm font-semibold">U</span>
                   </div>
-                  <ChevronDown className="text-[var(--muted)]" />
-                </div>
+                  <ChevronDown className="text-[var(--muted)] group-hover:text-white" />
+                </Link>   
               </nav>
             </div>
 
