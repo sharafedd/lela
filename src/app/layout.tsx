@@ -8,7 +8,6 @@ import MobileMenu from '@/components/MobileMenu';
 export const metadata: Metadata = {
   title: 'Lela — Stories',
   description: 'Stories, beautifully told.',
-  icons: { icon: '/lela-logo.png' },
 };
 
 /* --- inline icons (server-safe) --- */
